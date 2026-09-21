@@ -1,4 +1,8 @@
-import magic
+try:
+    import magic
+except ImportError:  # pragma: no cover - Windows environments may not have libmagic installed.
+    magic = None
+
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -7,9 +11,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 def validate_pdf(file):
     """
-    This performs two checks:
-    1. Ensures the file size is within the allowed maximum (in bytes).
-    2. Uses libmagic (via python-magic) to analyze the file's magic bytes and verify its actual MIME.
+    Validate uploaded resumes without depending on a system libmagic installation.
+    We still enforce the PDF extension and size, and then verify the file header
+    is a valid PDF signature. If python-magic is available, we also use it as an
+    extra MIME check.
     """
 
     # Maximum allowed size (5 MB)
@@ -19,18 +24,21 @@ def validate_pdf(file):
     if file.size > max_size:
         raise ValidationError("File size must be 5 MB or less.")
 
-    # Read the first 2048 bytes (recommendation from python-magic)
     sample = file.read(2048)
-
-    # Reset the file pointer to the beginning, so Django can process the file later
     file.seek(0)
 
-    # Detect file's actual MIME type based on content
-    mime = magic.from_buffer(sample, mime=True)
-
-    # Check if the detected MIME type is PDF
-    if mime != "application/pdf":
+    if not sample:
         raise ValidationError("Uploaded file is not a valid PDF.")
+
+    if sample.startswith(b"%PDF"):
+        return
+
+    if magic is not None:
+        mime = magic.from_buffer(sample, mime=True)
+        if mime == "application/pdf":
+            return
+
+    raise ValidationError("Uploaded file is not a valid PDF.")
 
 
 class CareerApplication(models.Model):
