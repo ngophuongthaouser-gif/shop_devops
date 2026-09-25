@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg navbar-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'home:index' %}">Django Shop</a>
+        <a class="navbar-brand" href="{% url 'home:index' %}">DevShop</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -8,53 +8,21 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <form class="d-flex me-auto my-2 my-lg-0" method="get" action="{% url 'products:index' %}">
-                <input class="form-control me-2 search-input" type="search" name="q" placeholder="Search"
+                <input class="form-control me-2 search-input" type="search" name="q" placeholder="Tìm sản phẩm"
                        aria-label="Search" value="{{ search_query|default_if_none:'' }}">
                 <button class="btn btn-primary search-btn" type="submit">
                     <i class="bi bi-search"></i>
                 </button>
             </form>
 
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item dropdown me-3">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdownCategories" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Categories
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownCategories">
-                        <li><a class="dropdown-item fw-bold" href="{% url 'products:index' %}">All Products</a></li>
-                        {% if categories_menu %}
-                            <li><hr class="dropdown-divider"></li>
-                        {% endif %}
-                        {% for parent_category, subcategories in categories_menu.items %}
-                            {% if subcategories.exists %}
-                                <li class="dropdown-submenu">
-                                    <a class="dropdown-item dropdown-toggle" href="{% url 'products:index' %}?category={{ parent_category.slug }}">{{ parent_category.name }}</a>
-                                    <ul class="dropdown-menu">
-                                        {% for subcategory in subcategories %}
-                                            <li><a class="dropdown-item" href="{% url 'products:index' %}?category={{ subcategory.slug }}">{{ subcategory.name }}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                </li>
-                            {% else %}
-                                <li><a class="dropdown-item" href="{% url 'products:index' %}?category={{ parent_category.slug }}">{{ parent_category.name }}</a></li>
-                            {% endif %}
-                        {% empty %}
-                            <!-- No categories in the system -->
-                        {% endfor %}
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'home:about' %}" class="nav-link">About Us</a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'home:faq' %}" class="nav-link">FAQ</a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'home:privacy' %}" class="nav-link">Privacy Policy</a>
-                </li>
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="{% url 'home:index' %}">Trang chủ</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'products:index' %}">Sản phẩm</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'home:about' %}">Giới thiệu</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'home:faq' %}">Hỏi đáp</a></li>
                 <li class="nav-item position-relative me-2">
                     <a href="{% url 'cart:detail' %}" class="nav-link">
-                        <i class="bi bi-cart" aria-label="Cart"></i>
+                        <i class="bi bi-cart" aria-label="Giỏ hàng"></i>
                         {% if cart_total_quantity %}
                         <span id="cartBadgeCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary small">
                             {{ cart_total_quantity }}
@@ -62,33 +30,22 @@
                         {% endif %}
                     </a>
                 </li>
-                <li class="nav-item">
-                    <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
-                        <i class="bi bi-brightness-high" id="themeIcon"></i>
-                    </button>
-                </li>
-                <li class="nav-item">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle profile-icon" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{{ user.profile_picture.url }}" alt="Profile" class="profile-picture" width="40" height="40">
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                <li><a class="dropdown-item" href="{% url 'users:profile' %}"><i class="bi bi-person"></i> Profile</a></li>
-                                <li><a class="dropdown-item" href="{% url 'orders:order_list' %}"><i class="bi bi-bag"></i> Orders</a></li>
-                                <li><a class="dropdown-item" href="{% url 'users:wishlist' %}"><i class="bi bi-heart"></i> Wishlist</a></li>
-                                <li><a class="dropdown-item" href="{% url 'users:addresses' %}"><i class="bi bi-geo-alt"></i> Addresses</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'users:privacy_settings' %}"><i class="bi bi-shield-lock"></i> Privacy Settings</a></li>
-                                <li><a class="dropdown-item" href="{% url 'account_change_password' %}"><i class="bi bi-key"></i> Change Password</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <a href="{% url 'account_login' %}" class="btn btn-primary login-button">Login</a>
-                    {% endif %}
-                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle profile-icon" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ user.profile_picture.url }}" alt="Profile" class="profile-picture" width="40" height="40">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="{% url 'users:profile' %}"><i class="bi bi-person"></i> Hồ sơ</a></li>
+                            <li><a class="dropdown-item" href="{% url 'orders:order_list' %}"><i class="bi bi-bag"></i> Đơn hàng</a></li>
+                            <li><a class="dropdown-item" href="{% url 'users:wishlist' %}"><i class="bi bi-heart"></i> Yêu thích</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a href="{% url 'account_login' %}" class="btn btn-primary login-button">Đăng nhập</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>

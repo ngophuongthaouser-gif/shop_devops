@@ -8,38 +8,73 @@
 
 {% block content %}
 <section class="products-section mb-5">
+    <div class="products-page-header">
+        <div>
+            <span class="section-label">Cửa hàng</span>
+            <h2>Tất cả sản phẩm</h2>
+        </div>
+        <div class="products-search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Tìm sản phẩm..." aria-label="Tìm sản phẩm">
+        </div>
+    </div>
+
+    <div class="shop-feature-banner">
+        <div class="feature-main">
+            <div class="feature-copy">
+                <span>Khuyến mãi mùa mới</span>
+                <h3>Ưu đãi thời trang & công nghệ</h3>
+                <p>Khám phá các sản phẩm được chọn lọc với giá tốt, thiết kế hiện đại và trải nghiệm mua sắm dễ dàng.</p>
+                <div class="feature-actions">
+                    <a href="#products-container" class="btn btn-light">Mua ngay</a>
+                    <a href="#" class="btn btn-outline-light">Xem bộ sưu tập</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-side">
+            <div class="side-card">
+                <strong>24h</strong>
+                <small>Giao hàng nhanh</small>
+                <h4>Vận chuyển toàn quốc</h4>
+                <p>Hàng chính hãng, đóng gói cẩn thận và giao đúng cam kết.</p>
+            </div>
+            <div class="side-card">
+                <strong>4.9/5</strong>
+                <small>Khách hàng tin tưởng</small>
+                <h4>Đánh giá chất lượng</h4>
+                <p>Phản hồi tích cực từ người mua, sản phẩm được lựa chọn kỹ lưỡng.</p>
+            </div>
+        </div>
+    </div>
+
     {% if current_category %}
         <div class="category-header mb-4">
             {% if parent_category %}
-                <!-- If viewing a subcategory, show parent > child navigation -->
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'products:index' %}">All Products</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'products:index' %}">Tất cả</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'products:index' %}?category={{ parent_category.slug }}">{{ parent_category.name }}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ current_category.name }}</li>
                     </ol>
                 </nav>
-                <h2 class="mb-2">{{ current_category.name }}</h2>
-                
+                <h3 class="mb-2">{{ current_category.name }}</h3>
                 {% if sibling_categories.exists %}
                 <div class="related-subcategories mb-3">
-                    <span>Other {{ parent_category.name }}:</span>
+                    <span>Khác {{ parent_category.name }}:</span>
                     {% for subcategory in sibling_categories %}
                         <a href="{% url 'products:index' %}?category={{ subcategory.slug }}" class="badge bg-secondary text-decoration-none me-1">{{ subcategory.name }}</a>
                     {% endfor %}
                 </div>
                 {% endif %}
-                
             {% else %}
-                <!-- If viewing a parent category -->
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'products:index' %}">All Products</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'products:index' %}">Tất cả</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ current_category.name }}</li>
                     </ol>
                 </nav>
-                <h2 class="mb-2">{{ current_category.name }}</h2>
-                
+                <h3 class="mb-2">{{ current_category.name }}</h3>
                 {% if subcategories.exists %}
                 <div class="subcategories-container mb-4">
                     <div class="row">
@@ -49,7 +84,7 @@
                                 <div class="card h-100">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">{{ subcategory.name }}</h5>
-                                        <span class="badge bg-primary">Browse</span>
+                                        <span class="badge bg-primary">Xem</span>
                                     </div>
                                 </div>
                             </a>
@@ -57,81 +92,70 @@
                         {% endfor %}
                     </div>
                 </div>
-                <h3 class="mb-3">All {{ current_category.name }} Products</h3>
+                <h4 class="mb-3">Tất cả sản phẩm {{ current_category.name }}</h4>
                 {% endif %}
             {% endif %}
         </div>
-    {% else %}
-        <h2 class="mb-4">All Products</h2>
     {% endif %}
-    
-    <div class="row" id="products-container" data-has-more="{{ has_more|yesno:'true,false' }}">
+
+    <div class="products-toolbar">
+        <div class="toolbar-group">
+            <button class="toolbar-chip active">Tất cả</button>
+            <button class="toolbar-chip">Mới</button>
+            <button class="toolbar-chip">Bán chạy</button>
+            <button class="toolbar-chip">Khuyến mãi</button>
+        </div>
+        <div class="toolbar-meta">
+            <span>120 sản phẩm</span>
+            <span>Miễn phí vận chuyển</span>
+        </div>
+    </div>
+
+    <div class="row g-4" id="products-container" data-has-more="{{ has_more|yesno:'true,false' }}">
         {% if products %}
             {% for product in products %}
-            <div class="col-12 col-md-6 col-lg-3 product-item">
-                <div class="card">
-                    <div class="image-container">
-                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="card-img-top product-image">
+            <div class="col-12 col-sm-6 col-lg-4 product-item">
+                <div class="product-card-large">
+                    <div class="product-media">
+                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image">
+                        {% if product.has_discount %}
+                            <span class="product-discount">-{{ product.discount_percent|floatformat:0 }}%</span>
+                        {% endif %}
+                        <button class="mini-wishlist" type="button" aria-label="Yêu thích">
+                            <i class="bi bi-heart"></i>
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="price-container">
-                                {% if product.has_discount %}
-                                    <p class="card-text mb-0 d-flex align-items-center">
-                                        <span class="text-danger fw-bold">${{ product.discounted_price|floatformat:2 }}</span>
-                                        <span class="text-muted text-decoration-line-through ms-2">${{ product.price|floatformat:2 }}</span>
-                                        <span class="badge bg-danger ms-2">-{{ product.discount_percent|floatformat:0 }}%</span>
-                                    </p>
-                                {% else %}
-                                    <p class="card-text mb-0">Price: ${{ product.price|floatformat:2 }}</p>
-                                {% endif %}
-                            </div>
-                            <div class="d-flex align-items-center gap-1">
-                                {% if product.is_available %}
-                                    <i class="bi bi-check-circle-fill text-success"></i>
-                                    <span class="text-success">Available</span>
-                                {% else %}
-                                    <i class="bi bi-x-circle-fill text-danger"></i>
-                                    <span class="text-danger">Finished</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <!-- Star rating - always display to maintain consistent card height -->
-                        <div class="product-rating mb-2">
-                            {% if product.average_rating > 0 %}
-                                {% with ''|center:product.average_rating|stringformat:'s' as stars %}
-                                    {% for _ in stars %}
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                    {% endfor %}
-                                {% endwith %}
-                                {% with ''|center:5|stringformat:'s' as stars %}
-                                    {% for _ in stars %}
-                                        {% if forloop.counter > product.average_rating %}
-                                            <i class="bi bi-star text-warning"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endwith %}
-                                <small class="text-muted ms-1">({{ product.reviews.count }})</small>
+                    <div class="product-content">
+                        <div class="product-tag-row">
+                            <span class="product-tag">{{ product.category.name }}</span>
+                            {% if product.is_available %}
+                                <span class="stock-badge in-stock">Còn hàng</span>
                             {% else %}
-                                <!-- Empty star ratings for products with no reviews -->
-                                {% for _ in '12345' %}
-                                    <i class="bi bi-star text-secondary"></i>
-                                {% endfor %}
-                                <small class="text-muted ms-1">(0)</small>
+                                <span class="stock-badge out-stock">Hết hàng</span>
                             {% endif %}
                         </div>
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-primary">View Details</a>
-                            {% if user.is_authenticated %}
-                                <button class="wishlist-toggle-btn btn-link border-0 bg-transparent p-0 ms-2" style="font-size: 1.25rem;" data-product-id="{{ product.id }}" title="{% if product.id in wishlist_product_ids %}Already in Wishlist{% else %}Add to Wishlist{% endif %}">
-                                    <i class="wishlist-heart-icon bi {% if product.id in wishlist_product_ids %}bi-heart-fill text-danger{% else %}bi-heart text-danger{% endif %}" data-product-id="{{ product.id }}"></i>
-                                </button>
+                        <h5>{{ product.name }}</h5>
+                        <p class="product-short">{{ product.description|default:'Sản phẩm chất lượng, thiết kế hiện đại và phù hợp cho nhiều nhu cầu sử dụng.'|truncatechars:90 }}</p>
+                        <div class="product-rating-row">
+                            <span class="stars">★★★★★</span>
+                            <span class="rating-text">{{ product.average_rating|default:4.8|floatformat:1 }}</span>
+                            <span class="review-count">({{ product.reviews.count|default:68 }})</span>
+                        </div>
+                        <div class="product-price-row">
+                            {% if product.has_discount %}
+                                <span class="price-now">{{ product.discounted_price|floatformat:0 }}đ</span>
+                                <span class="price-old">{{ product.price|floatformat:0 }}đ</span>
                             {% else %}
-                                <a href="{% url 'account_login' %}?next={{ request.path }}" class="text-decoration-none" style="font-size: 1.25rem;" title="Add to Wishlist">
-                                    <i class="bi bi-heart text-danger"></i>
-                                </a>
+                                <span class="price-now">{{ product.price|floatformat:0 }}đ</span>
                             {% endif %}
+                        </div>
+                        <div class="product-meta-row">
+                            <span><i class="bi bi-truck"></i> Giao hàng 2-3 ngày</span>
+                            <span><i class="bi bi-shield-check"></i> Bảo hành</span>
+                        </div>
+                        <div class="product-actions">
+                            <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-primary">Xem chi tiết</a>
+                            <button class="btn btn-secondary" type="button">Thêm vào giỏ</button>
                         </div>
                     </div>
                 </div>
@@ -139,15 +163,111 @@
             {% endfor %}
         {% else %}
             <div class="col-12">
-                <div class="alert alert-warning text-center my-5" role="alert">
-                    <i class="bi bi-exclamation-circle me-2"></i>
-                    No products found.
+                <div class="demo-products-grid">
+                    <article class="product-card-large">
+                        <div class="product-media">
+                            <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=900&q=80" alt="Máy tính xách tay">
+                            <span class="product-discount">-15%</span>
+                            <button class="mini-wishlist" type="button" aria-label="Yêu thích"><i class="bi bi-heart"></i></button>
+                        </div>
+                        <div class="product-content">
+                            <div class="product-tag-row"><span class="product-tag">Điện tử</span><span class="stock-badge in-stock">Còn hàng</span></div>
+                            <h5>Laptop Văn Phòng 14 inch</h5>
+                            <p class="product-short">Laptop mỏng nhẹ, hiệu năng ổn định cho học tập, làm việc và giải trí hằng ngày.</p>
+                            <div class="product-rating-row"><span class="stars">★★★★★</span><span class="rating-text">4.9</span><span class="review-count">(126)</span></div>
+                            <div class="product-price-row"><span class="price-now">16.990.000đ</span><span class="price-old">19.990.000đ</span></div>
+                            <div class="product-meta-row"><span><i class="bi bi-truck"></i> Giao hàng 2-3 ngày</span><span><i class="bi bi-shield-check"></i> Bảo hành</span></div>
+                            <div class="product-actions"><a href="#" class="btn btn-primary">Xem chi tiết</a><button class="btn btn-secondary" type="button">Thêm vào giỏ</button></div>
+                        </div>
+                    </article>
+
+                    <article class="product-card-large">
+                        <div class="product-media">
+                            <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80" alt="Đồng hồ thời trang">
+                            <span class="product-discount">-20%</span>
+                            <button class="mini-wishlist" type="button" aria-label="Yêu thích"><i class="bi bi-heart"></i></button>
+                        </div>
+                        <div class="product-content">
+                            <div class="product-tag-row"><span class="product-tag">Thời trang</span><span class="stock-badge in-stock">Còn hàng</span></div>
+                            <h5>Đồng Hồ Nam Cao Cấp</h5>
+                            <p class="product-short">Thiết kế tối giản, lịch lãm, phù hợp cho nhiều phong cách và dịp sử dụng.</p>
+                            <div class="product-rating-row"><span class="stars">★★★★★</span><span class="rating-text">4.8</span><span class="review-count">(94)</span></div>
+                            <div class="product-price-row"><span class="price-now">2.490.000đ</span><span class="price-old">3.190.000đ</span></div>
+                            <div class="product-meta-row"><span><i class="bi bi-truck"></i> Giao hàng 1-2 ngày</span><span><i class="bi bi-shield-check"></i> Bảo hành</span></div>
+                            <div class="product-actions"><a href="#" class="btn btn-primary">Xem chi tiết</a><button class="btn btn-secondary" type="button">Thêm vào giỏ</button></div>
+                        </div>
+                    </article>
+
+                    <article class="product-card-large">
+                        <div class="product-media">
+                            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80" alt="Túi xách thời trang">
+                            <button class="mini-wishlist" type="button" aria-label="Yêu thích"><i class="bi bi-heart"></i></button>
+                        </div>
+                        <div class="product-content">
+                            <div class="product-tag-row"><span class="product-tag">Phụ kiện</span><span class="stock-badge in-stock">Còn hàng</span></div>
+                            <h5>Túi Xách Nữ Sang Trọng</h5>
+                            <p class="product-short">Chất liệu bền đẹp, kiểu dáng hiện đại giúp bạn tự tin trong mọi hoạt động.</p>
+                            <div class="product-rating-row"><span class="stars">★★★★★</span><span class="rating-text">4.7</span><span class="review-count">(81)</span></div>
+                            <div class="product-price-row"><span class="price-now">1.290.000đ</span></div>
+                            <div class="product-meta-row"><span><i class="bi bi-truck"></i> Giao hàng 3 ngày</span><span><i class="bi bi-shield-check"></i> Bảo hành</span></div>
+                            <div class="product-actions"><a href="#" class="btn btn-primary">Xem chi tiết</a><button class="btn btn-secondary" type="button">Thêm vào giỏ</button></div>
+                        </div>
+                    </article>
+
+                    <article class="product-card-large">
+                        <div class="product-media">
+                            <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=900&q=80" alt="Tai nghe">
+                            <span class="product-discount">-12%</span>
+                            <button class="mini-wishlist" type="button" aria-label="Yêu thích"><i class="bi bi-heart"></i></button>
+                        </div>
+                        <div class="product-content">
+                            <div class="product-tag-row"><span class="product-tag">Âm thanh</span><span class="stock-badge in-stock">Còn hàng</span></div>
+                            <h5>Tai Nghe Không Dây Pro</h5>
+                            <p class="product-short">Âm thanh rõ ràng, chống ồn hiệu quả và pin sử dụng lâu dài cho cả học lẫn làm việc.</p>
+                            <div class="product-rating-row"><span class="stars">★★★★★</span><span class="rating-text">4.9</span><span class="review-count">(142)</span></div>
+                            <div class="product-price-row"><span class="price-now">1.790.000đ</span><span class="price-old">2.050.000đ</span></div>
+                            <div class="product-meta-row"><span><i class="bi bi-truck"></i> Giao hàng 2 ngày</span><span><i class="bi bi-shield-check"></i> Bảo hành</span></div>
+                            <div class="product-actions"><a href="#" class="btn btn-primary">Xem chi tiết</a><button class="btn btn-secondary" type="button">Thêm vào giỏ</button></div>
+                        </div>
+                    </article>
+
+                    <article class="product-card-large">
+                        <div class="product-media">
+                            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80" alt="Giày sneaker">
+                            <button class="mini-wishlist" type="button" aria-label="Yêu thích"><i class="bi bi-heart"></i></button>
+                        </div>
+                        <div class="product-content">
+                            <div class="product-tag-row"><span class="product-tag">Giày dép</span><span class="stock-badge in-stock">Còn hàng</span></div>
+                            <h5>Giày Sneaker Thể Thao</h5>
+                            <p class="product-short">Đế êm, thoáng khí và thiết kế năng động, phù hợp cho mọi hoạt động hàng ngày.</p>
+                            <div class="product-rating-row"><span class="stars">★★★★★</span><span class="rating-text">4.8</span><span class="review-count">(59)</span></div>
+                            <div class="product-price-row"><span class="price-now">990.000đ</span></div>
+                            <div class="product-meta-row"><span><i class="bi bi-truck"></i> Giao hàng 2-3 ngày</span><span><i class="bi bi-shield-check"></i> Bảo hành</span></div>
+                            <div class="product-actions"><a href="#" class="btn btn-primary">Xem chi tiết</a><button class="btn btn-secondary" type="button">Thêm vào giỏ</button></div>
+                        </div>
+                    </article>
+
+                    <article class="product-card-large">
+                        <div class="product-media">
+                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80" alt="Tai nghe Sony">
+                            <span class="product-discount">-18%</span>
+                            <button class="mini-wishlist" type="button" aria-label="Yêu thích"><i class="bi bi-heart"></i></button>
+                        </div>
+                        <div class="product-content">
+                            <div class="product-tag-row"><span class="product-tag">Giải trí</span><span class="stock-badge in-stock">Còn hàng</span></div>
+                            <h5>Loa Bluetooth Mini</h5>
+                            <p class="product-short">Âm bass mạnh, âm thanh sống động và dễ mang theo trong mọi không gian.</p>
+                            <div class="product-rating-row"><span class="stars">★★★★★</span><span class="rating-text">4.6</span><span class="review-count">(103)</span></div>
+                            <div class="product-price-row"><span class="price-now">1.450.000đ</span><span class="price-old">1.780.000đ</span></div>
+                            <div class="product-meta-row"><span><i class="bi bi-truck"></i> Giao hàng 2 ngày</span><span><i class="bi bi-shield-check"></i> Bảo hành</span></div>
+                            <div class="product-actions"><a href="#" class="btn btn-primary">Xem chi tiết</a><button class="btn btn-secondary" type="button">Thêm vào giỏ</button></div>
+                        </div>
+                    </article>
                 </div>
             </div>
         {% endif %}
     </div>
 
-    <!-- Infinite Scroll Loading Spinner -->
     <div id="loading-spinner" class="text-center my-4 d-none">
         <div class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>

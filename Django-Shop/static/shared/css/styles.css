@@ -73,7 +73,10 @@
 }
 
 body {
-    background-color: var(--bg-color);
+    background:
+        radial-gradient(circle at top left, rgba(96, 165, 250, 0.18), transparent 22%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.12), transparent 28%),
+        linear-gradient(180deg, #eef6ff 0%, #f8fbff 100%);
     color: var(--text-color);
     font-family: 'Open Sans', sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -82,6 +85,12 @@ body {
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat', sans-serif;
     color: var(--text-color);
+}
+
+main.container {
+    max-width: 1280px;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
 }
 
 /* Navbar */
