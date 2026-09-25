@@ -267,3 +267,4 @@ SOCIALACCOUNT_PROVIDERS = {
 ## License
 
 This project is licensed under the GNU General Public License v3.0. See the full text in the [LICENSE file](LICENSE).
+CI/CD test - auto deploy
